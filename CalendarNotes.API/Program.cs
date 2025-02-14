@@ -1,3 +1,5 @@
+using CalendarNotes.DAL.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace CalendarNotes.API
 {
@@ -6,6 +8,9 @@ namespace CalendarNotes.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDbContext<CalendarNotesDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
 
