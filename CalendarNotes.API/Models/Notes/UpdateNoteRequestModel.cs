@@ -1,6 +1,6 @@
-﻿namespace CalendarNotes.BLL.DTOs.Notes
+﻿namespace CalendarNotes.API.Models.Notes
 {
-    public class UpdateNoteRequestDTO
+    public class UpdateNoteRequestModel
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;

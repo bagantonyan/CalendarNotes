@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.BLL", "Calend
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.Shared", "CalendarNotes.Shared\CalendarNotes.Shared.csproj", "{E2EF9C1F-84AF-4149-AC06-77C464EFA1F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.Client", "CalendarNotes.Client\CalendarNotes.Client.csproj", "{F60D83B7-D87C-4996-A1BD-1237E08EAC28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{E2EF9C1F-84AF-4149-AC06-77C464EFA1F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2EF9C1F-84AF-4149-AC06-77C464EFA1F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2EF9C1F-84AF-4149-AC06-77C464EFA1F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

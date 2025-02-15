@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CalendarNotes.BLL.DTOs.Notes;
 using CalendarNotes.BLL.Services.Interfaces;
 using CalendarNotes.DAL.Entities;
@@ -20,13 +21,6 @@ namespace CalendarNotes.BLL.Services
             _mapper = mapper;
         }
 
-        public IQueryable<NoteResponseDTO> GetAll(bool trackChanges)
-        {
-            var noteEntities = _unitOfWork.NoteRepository.GetAll(trackChanges);
-
-            return _mapper.Map<IQueryable<NoteResponseDTO>>(noteEntities);
-        }
-
         public async Task<NoteResponseDTO> CreateAsync(CreateNoteRequestDTO requestDTO)
         {
             var noteEntity = _mapper.Map<Note>(requestDTO);
@@ -40,10 +34,7 @@ namespace CalendarNotes.BLL.Services
 
         public async Task UpdateAsync(UpdateNoteRequestDTO requestDTO)
         {
-            var noteEntity = await _unitOfWork.NoteRepository.GetByIdAsync(requestDTO.Id, trackChanges: true);
-
-            if (noteEntity is null)
-                throw new NoteNotFoundException(requestDTO.Id);
+            var noteEntity = await GetNoteEntityById(requestDTO.Id, trackChanges: true);
 
             _mapper.Map(requestDTO, noteEntity);
 
@@ -54,14 +45,37 @@ namespace CalendarNotes.BLL.Services
 
         public async Task DeleteAsync(int noteId)
         {
+            var noteEntity = await GetNoteEntityById(noteId, trackChanges: true);
+
+            _unitOfWork.NoteRepository.Delete(noteEntity);
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public IQueryable<NoteResponseDTO> GetAll(bool trackChanges)
+        {
+            var noteEntities = _unitOfWork.NoteRepository.GetAll(trackChanges);
+
+            var noteResponseDTOs = noteEntities.ProjectTo<NoteResponseDTO>(_mapper.ConfigurationProvider);
+
+            return noteResponseDTOs;
+        }
+
+        public async Task<NoteResponseDTO> GetByIdAsync(int noteId, bool trackChanges)
+        {
+            var noteEntity = await GetNoteEntityById(noteId, trackChanges);
+
+            return _mapper.Map<NoteResponseDTO>(noteEntity);
+        }
+
+        private async Task<Note> GetNoteEntityById(int noteId, bool trackChanges)
+        {
             var noteEntity = await _unitOfWork.NoteRepository.GetByIdAsync(noteId, trackChanges: true);
 
             if (noteEntity is null)
                 throw new NoteNotFoundException(noteId);
 
-            _unitOfWork.NoteRepository.Delete(noteEntity);
-
-            await _unitOfWork.SaveChangesAsync();
+            return noteEntity;
         }
     }
 }

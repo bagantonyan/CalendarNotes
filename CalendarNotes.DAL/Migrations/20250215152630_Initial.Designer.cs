@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CalendarNotes.DAL.Migrations
 {
     [DbContext(typeof(CalendarNotesDbContext))]
-    [Migration("20250215111440_Initial")]
+    [Migration("20250215152630_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

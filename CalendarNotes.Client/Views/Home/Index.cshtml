@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7135/notificationHub",
+            {
+                skipNegotiation: true,
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        async function start() {
+            try {
+                await connection.start();
+                console.log("Connected to SignalR");
+            } catch (err) {
+                console.error(err);
+                setTimeout(start, 5000);
+            }
+        }
+
+        connection.onclose(start);
+        start();
+
+        connection.on("ReceiveNotification", (message) => {
+            console.log("Notification Received: ", message);
+            showNotification(message);
+        });
+
+        function showNotification(message) {
+            if (!("Notification" in window)) {
+                console.error("Browser does not support notifications.");
+            } else if (Notification.permission === "granted") {
+                new Notification("New Notification", { body: message });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        new Notification("New Notification", { body: message });
+                    }
+                });
+            }
+        }
+    </script>
+}

@@ -1,6 +1,9 @@
 using CalendarNotes.API.Extensions;
+using CalendarNotes.API.Hubs;
+using CalendarNotes.API.Services;
 using CalendarNotes.BLL.Mappings;
 using CalendarNotes.DAL.Contexts;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalendarNotes.API
@@ -16,9 +19,21 @@ namespace CalendarNotes.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddOData(opt =>
+                opt
+                .Select()
+                .Filter()
+                .OrderBy()
+                .Expand()
+                .Count());
 
             builder.Services.AddServices(builder.Configuration);
+
+            builder.Services.AddCorsConfigs();
+
+            builder.Services.AddSignalR();
+
+            builder.Services.AddHostedService<NotificationService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -35,11 +50,15 @@ namespace CalendarNotes.API
 
             app.UseHttpsRedirection();
 
+            app.UseCors("CorsPolicy");
+
             app.UseAuthorization();
 
             await app.MigrateDatabaseAsync();
 
             app.MapControllers();
+
+            app.MapHub<NotificationHub>("/notificationHub");
 
             app.Run();
         }

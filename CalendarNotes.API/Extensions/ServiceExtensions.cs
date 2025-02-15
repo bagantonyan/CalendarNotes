@@ -1,9 +1,11 @@
-﻿using CalendarNotes.BLL.Mappings;
+﻿using CalendarNotes.API.Mappings;
+using CalendarNotes.BLL.Mappings;
 using CalendarNotes.BLL.Services;
 using CalendarNotes.BLL.Services.Interfaces;
 using CalendarNotes.DAL.Contexts;
 using CalendarNotes.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace CalendarNotes.API.Extensions
@@ -39,8 +41,20 @@ namespace CalendarNotes.API.Extensions
 
             services.AddAutoMapper(config =>
             {
-                //config.AddProfile<ApiMappingProfile>();
+                config.AddProfile<APIMappingProfile>();
                 config.AddProfile<BLLMappingProfile>();
+            });
+        }
+
+        public static void AddCorsConfigs(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
             });
         }
     }

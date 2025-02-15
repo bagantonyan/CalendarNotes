@@ -9,7 +9,7 @@ namespace CalendarNotes.BLL.Mappings
         public BLLMappingProfile()
         {
             CreateMap<CreateNoteRequestDTO, Note>();
-            CreateMap<Note, NoteResponseDTO>();
+            CreateMap<Note, NoteResponseDTO>().ReverseMap();
         }
     }
 }
