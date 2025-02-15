@@ -37,12 +37,14 @@ namespace CalendarNotes.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsNotified")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("NoteTime")
+                    b.Property<DateTime>("NotificationTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Text")

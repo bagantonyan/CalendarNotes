@@ -20,8 +20,8 @@ namespace CalendarNotes.DAL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Text = table.Column<string>(type: "character varying(10000)", maxLength: 10000, nullable: false),
-                    NoteTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsNotified = table.Column<bool>(type: "boolean", nullable: false),
+                    NotificationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsNotified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)

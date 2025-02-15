@@ -7,9 +7,8 @@ namespace CalendarNotes.DAL.Repositories
 {
     public class NoteRepository(CalendarNotesDbContext dbContext) : BaseRepository<Note>(dbContext), INoteRepository
     {
-        public async Task<IEnumerable<Note>> GetAllAsync(bool trackChanges)
-            => await GetAll(trackChanges)
-                    .ToListAsync();
+        public IQueryable<Note> GetAllAsync(bool trackChanges)
+            => GetAll(trackChanges);
 
         public async Task<Note> GetByIdAsync(int eventId, bool trackChanges)
             => await GetByCondition(e => e.Id == eventId, trackChanges)

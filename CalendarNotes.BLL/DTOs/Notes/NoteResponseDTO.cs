@@ -1,6 +1,6 @@
-﻿namespace CalendarNotes.DAL.Entities
+﻿namespace CalendarNotes.BLL.DTOs.Notes
 {
-    public class Note : BaseEntity
+    public class NoteResponseDTO
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;

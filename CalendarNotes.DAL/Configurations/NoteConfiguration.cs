@@ -1,4 +1,5 @@
 ﻿using CalendarNotes.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CalendarNotes.DAL.Configurations
@@ -19,10 +20,11 @@ namespace CalendarNotes.DAL.Configurations
                 .HasMaxLength(10000)
                 .IsRequired(true);
 
-            builder.Property(p => p.NoteTime)
+            builder.Property(p => p.NotificationTime)
                 .IsRequired(true);
 
             builder.Property(p => p.IsNotified)
+                .HasDefaultValue(false)
                 .IsRequired(true);
         }
     }

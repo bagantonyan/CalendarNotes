@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CalendarNotes.DAL.Migrations
 {
     [DbContext(typeof(CalendarNotesDbContext))]
-    [Migration("20250214153848_Initial")]
+    [Migration("20250215111440_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -40,12 +40,14 @@ namespace CalendarNotes.DAL.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsNotified")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("NoteTime")
+                    b.Property<DateTime>("NotificationTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Text")
