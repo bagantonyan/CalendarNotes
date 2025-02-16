@@ -5,8 +5,10 @@ using CalendarNotes.BLL.Services.Interfaces;
 using CalendarNotes.DAL.Contexts;
 using CalendarNotes.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.OData;
+using OData.Swagger.Services;
+using CalendarNotes.API.Helpers;
 
 namespace CalendarNotes.API.Extensions
 {
@@ -16,6 +18,8 @@ namespace CalendarNotes.API.Extensions
         {
             services.AddSwaggerGen(configs =>
             {
+                configs.EnableAnnotations();
+
                 configs.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Note API",
@@ -28,6 +32,8 @@ namespace CalendarNotes.API.Extensions
                         Url = new Uri("https://github.com/bagantonyan")
                     }
                 });
+
+                configs.OperationFilter<EnableODataQueryOptions>();
             });
         }
 

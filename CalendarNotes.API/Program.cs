@@ -3,8 +3,11 @@ using CalendarNotes.API.Hubs;
 using CalendarNotes.API.Services;
 using CalendarNotes.BLL.Mappings;
 using CalendarNotes.DAL.Contexts;
+using CalendarNotes.DAL.Entities;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OData.ModelBuilder;
+using OData.Swagger.Services;
 
 namespace CalendarNotes.API
 {
@@ -14,10 +17,9 @@ namespace CalendarNotes.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<CalendarNotesDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Add services to the container.
+            // Configure OData model
+            ODataConventionModelBuilder odataBuilder = new ODataConventionModelBuilder();
+            odataBuilder.EntitySet<Note>("Notes");
 
             builder.Services.AddControllers().AddOData(opt =>
                 opt
@@ -25,7 +27,9 @@ namespace CalendarNotes.API
                 .Filter()
                 .OrderBy()
                 .Expand()
-                .Count());
+                .SetMaxTop(100)
+                .Count()
+                .AddRouteComponents("odata", odataBuilder.GetEdmModel()));
 
             builder.Services.AddServices(builder.Configuration);
 
@@ -39,6 +43,7 @@ namespace CalendarNotes.API
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwagger();
+
 
             var app = builder.Build();
 

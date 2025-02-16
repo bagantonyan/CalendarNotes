@@ -29,12 +29,13 @@ namespace CalendarNotes.API.Services
                 {
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                    var now = DateTime.UtcNow;
+                    // convert UtcNow to Now
+                    var now = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["NoteServiceOptions:UTCInterval"]));
 
                     var notesToNotify = await unitOfWork.NoteRepository
                         .GetByCondition(n => !n.IsNotified 
                                            && n.NotificationTime <= now 
-                                           && n.NotificationTime > now.AddMinutes(-1), 
+                                           && n.NotificationTime > now.AddMinutes(-Convert.ToDouble(_configuration["NoteServiceOptions:CheckIntervalMinutes"])), 
                                            trackChanges: true).ToListAsync(cancelToken);
 
                     foreach (var note in notesToNotify)
@@ -49,7 +50,7 @@ namespace CalendarNotes.API.Services
                     await unitOfWork.SaveChangesAsync();
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(Convert.ToDouble(_configuration["NoteServiceDelaySeconds"])), cancelToken);
+                await Task.Delay(TimeSpan.FromSeconds(Convert.ToDouble(_configuration["NoteServiceOptions:DelayTime"])), cancelToken);
             }
         }
     }
