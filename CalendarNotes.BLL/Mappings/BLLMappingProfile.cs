@@ -10,6 +10,7 @@ namespace CalendarNotes.BLL.Mappings
         {
             CreateMap<CreateNoteRequestDTO, Note>();
             CreateMap<Note, NoteResponseDTO>().ReverseMap();
+            CreateMap<UpdateNoteRequestDTO, Note>().ReverseMap();
         }
     }
 }

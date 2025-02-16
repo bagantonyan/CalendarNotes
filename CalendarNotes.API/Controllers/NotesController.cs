@@ -37,6 +37,8 @@ namespace CalendarNotes.API.Controllers
         /// <returns>List of notes</returns>
         [HttpGet]
         [EnableQuery]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<NoteResponseModel>>> GetAll()
         {
             var noteResponseDtos = _noteService.GetAll(trackChanges: false);
@@ -47,6 +49,9 @@ namespace CalendarNotes.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<NoteResponseModel>> GetById(int noteId)
         {
             var noteResponseDTO = await _noteService.GetByIdAsync(noteId, trackChanges: false);
@@ -54,7 +59,20 @@ namespace CalendarNotes.API.Controllers
             return Ok(_mapper.Map<NoteResponseModel>(noteResponseDTO));
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<NoteResponseModel>> Create(CreateNoteRequestModel requestModel)
+        {
+            var noteResponseDTO = await _noteService.CreateAsync(_mapper.Map<CreateNoteRequestDTO>(requestModel));
+
+            return CreatedAtAction(nameof(GetById), new { noteId = noteResponseDTO.Id }, _mapper.Map<NoteResponseModel>(noteResponseDTO));
+        }
+
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Update(UpdateNoteRequestModel requestModel)
         {
             await _noteService.UpdateAsync(_mapper.Map<UpdateNoteRequestDTO>(requestModel));
@@ -62,15 +80,10 @@ namespace CalendarNotes.API.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Note>> Create(CreateNoteRequestModel requestModel)
-        {
-            var noteResponseDTO = await _noteService.CreateAsync(_mapper.Map<CreateNoteRequestDTO>(requestModel));
-
-            return CreatedAtAction(nameof(GetById), new { noteId = noteResponseDTO.Id }, _mapper.Map<NoteResponseModel>(noteResponseDTO));
-        }
-
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int noteId)
         {
             await _noteService.DeleteAsync(noteId);
@@ -79,6 +92,8 @@ namespace CalendarNotes.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExportNotesToCsv()
         {
             var noteResponseDtos = await _noteService.GetAll(trackChanges: false).ToListAsync();
