@@ -3,14 +3,10 @@ using CalendarNotes.API.Filters;
 using CalendarNotes.API.Handlers;
 using CalendarNotes.API.Hubs;
 using CalendarNotes.API.Services;
-using CalendarNotes.BLL.Mappings;
-using CalendarNotes.DAL.Contexts;
 using CalendarNotes.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
-using OData.Swagger.Services;
 using Serilog;
 
 namespace CalendarNotes.API
@@ -57,7 +53,6 @@ namespace CalendarNotes.API
 
             builder.Services.AddHostedService<NotificationService>();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwagger();
@@ -65,7 +60,6 @@ namespace CalendarNotes.API
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.AddSwagger();

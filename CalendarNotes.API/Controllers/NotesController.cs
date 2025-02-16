@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CalendarNotes.DAL.Contexts;
-using CalendarNotes.DAL.Entities;
 using CalendarNotes.BLL.Services.Interfaces;
 using CalendarNotes.API.Models.Notes;
 using Microsoft.AspNetCore.OData.Query;

@@ -6,8 +6,6 @@ using CalendarNotes.DAL.Contexts;
 using CalendarNotes.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.OData;
-using OData.Swagger.Services;
 using CalendarNotes.API.Helpers;
 using FluentValidation.AspNetCore;
 using FluentValidation;

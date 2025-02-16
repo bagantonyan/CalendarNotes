@@ -40,7 +40,7 @@ namespace CalendarNotes.API.Services
 
                     foreach (var note in notesToNotify)
                     {
-                        var message = $"Напоминание: {note.Title} - {note.Text}";
+                        var message = $"Notification: {note.Title} - {note.Text}";
 
                         await _hubContext.Clients.All.SendAsync("ReceiveNotification", message, cancellationToken: cancelToken);
 
