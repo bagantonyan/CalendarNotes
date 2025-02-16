@@ -46,6 +46,9 @@ namespace CalendarNotes.API
             builder.Services.AddServices(builder.Configuration);
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+            builder.Services.AddFluentValidation();
+
             builder.Services.AddProblemDetails();
 
             builder.Services.AddCorsConfigs();

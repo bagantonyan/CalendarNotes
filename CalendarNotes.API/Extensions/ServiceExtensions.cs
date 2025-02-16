@@ -9,6 +9,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.OData;
 using OData.Swagger.Services;
 using CalendarNotes.API.Helpers;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using CalendarNotes.API.ModelValidators.Notes;
 
 namespace CalendarNotes.API.Extensions
 {
@@ -50,6 +53,13 @@ namespace CalendarNotes.API.Extensions
                 config.AddProfile<APIMappingProfile>();
                 config.AddProfile<BLLMappingProfile>();
             });
+        }
+
+        public static void AddFluentValidation(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssembly(typeof(CreateNoteRequestModelValidator).Assembly);
+            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationClientsideAdapters();
         }
 
         public static void AddCorsConfigs(this IServiceCollection services)
