@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.Shared", "Cal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.Client", "CalendarNotes.Client\CalendarNotes.Client.csproj", "{F60D83B7-D87C-4996-A1BD-1237E08EAC28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarNotes.Tests", "CalendarNotes.Tests\CalendarNotes.Tests.csproj", "{96676032-1e04-49d0-914a-d6e2836ca362}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,7 +40,11 @@ Global
 		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Release|Any CPU.Build.0 = Release|Any CPU
+                {F60D83B7-D87C-4996-A1BD-1237E08EAC28}.Release|Any CPU.Build.0 = Release|Any CPU
+                {96676032-1e04-49d0-914a-d6e2836ca362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {96676032-1e04-49d0-914a-d6e2836ca362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {96676032-1e04-49d0-914a-d6e2836ca362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {96676032-1e04-49d0-914a-d6e2836ca362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
