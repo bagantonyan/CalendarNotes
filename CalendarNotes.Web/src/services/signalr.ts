@@ -67,22 +67,44 @@ class SignalRService {
 
   async start(): Promise<void> {
     try {
-      if (this.connection?.state === signalR.HubConnectionState.Connected) {
+      if (!this.connection) {
+        console.warn('SignalR connection not initialized')
+        return
+      }
+
+      if (this.connection.state === signalR.HubConnectionState.Connected) {
         console.log('SignalR already connected')
         return
       }
 
-      await this.connection?.start()
-      console.log('✅ SignalR Connected! Connection ID:', this.connection?.connectionId)
+      // Если соединение находится в процессе подключения, ждем
+      if (this.connection.state === signalR.HubConnectionState.Connecting) {
+        console.log('SignalR connection already in progress')
+        return
+      }
+
+      await this.connection.start()
+      console.log('✅ SignalR Connected! Connection ID:', this.connection.connectionId)
       const callbacks = this.callbacks.get('connected') || []
-      callbacks.forEach((callback) => callback('connected'))
+      callbacks.forEach((callback) => {
+        try {
+          callback('connected')
+        } catch (callbackError) {
+          console.error('Error in connected callback:', callbackError)
+        }
+      })
     } catch (err) {
       console.error('❌ SignalR Connection Error:', err)
       const callbacks = this.callbacks.get('error') || []
-      callbacks.forEach((callback) =>
-        callback(err instanceof Error ? err.message : 'Connection error')
-      )
-      throw err
+      callbacks.forEach((callback) => {
+        try {
+          callback(err instanceof Error ? err.message : 'Connection error')
+        } catch (callbackError) {
+          console.error('Error in error callback:', callbackError)
+        }
+      })
+      // Не пробрасываем ошибку дальше, чтобы не ломать приложение
+      // throw err
     }
   }
 

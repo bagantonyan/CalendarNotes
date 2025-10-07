@@ -70,21 +70,72 @@ export const authApi = {
   }
 }
 
+// Интерфейс для обертки API ответа
+interface ApiResponseWrapper<T> {
+  data?: T[]
+  succeeded?: boolean
+  message?: string | null
+  statusCode?: number
+}
+
+// Интерфейс для OData ответа
+interface ODataResponse<T> {
+  value?: T[]
+  '@odata.context'?: string
+}
+
 // API методы для заметок
 export const notesApi = {
   async getAll(): Promise<Note[]> {
-    const response = await apiClient.get<Note[]>('/odata/Notes/GetAll')
-    return response.data
+    const response = await apiClient.get<Note[] | ApiResponseWrapper<Note> | ODataResponse<Note>>('/odata/Notes/GetAll')
+    
+    console.log('🌐 Сырой ответ от API:', response.data)
+    
+    // Проверяем формат с полем 'data' (кастомная обертка)
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      console.log('🔄 Обнаружен формат с полем data, извлекаем данные')
+      const wrapped = response.data as ApiResponseWrapper<Note>
+      return wrapped.data || []
+    }
+    
+    // Проверяем формат ответа OData (с полем 'value')
+    if (response.data && typeof response.data === 'object' && 'value' in response.data) {
+      console.log('🔄 Обнаружен OData формат, извлекаем value')
+      return (response.data as ODataResponse<Note>).value || []
+    }
+    
+    // Если это обычный массив
+    if (Array.isArray(response.data)) {
+      console.log('✅ Обычный массив')
+      return response.data
+    }
+    
+    console.warn('⚠️ Неожиданный формат ответа:', response.data)
+    return []
   },
 
   async getById(id: number): Promise<Note> {
-    const response = await apiClient.get<Note>(`/odata/Notes/GetById?noteId=${id}`)
-    return response.data
+    const response = await apiClient.get<Note | ApiResponseWrapper<Note>>(`/odata/Notes/GetById?noteId=${id}`)
+    
+    // Проверяем формат с полем 'data'
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      const wrapped = response.data as ApiResponseWrapper<Note>
+      return wrapped.data?.[0] as Note
+    }
+    
+    return response.data as Note
   },
 
   async create(data: CreateNoteRequest): Promise<Note> {
-    const response = await apiClient.post<Note>('/odata/Notes/Create', data)
-    return response.data
+    const response = await apiClient.post<Note | ApiResponseWrapper<Note>>('/odata/Notes/Create', data)
+    
+    // Проверяем формат с полем 'data'
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      const wrapped = response.data as ApiResponseWrapper<Note>
+      return wrapped.data?.[0] as Note
+    }
+    
+    return response.data as Note
   },
 
   async update(data: UpdateNoteRequest): Promise<void> {

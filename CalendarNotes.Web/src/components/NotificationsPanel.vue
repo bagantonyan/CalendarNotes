@@ -1,26 +1,30 @@
 <template>
   <div class="notifications-container">
-    <transition-group name="notification">
-      <n-card
+    <transition-group name="notification" tag="div" class="notifications-list">
+      <div
         v-for="notification in visibleNotifications"
         :key="notification.id"
-        class="notification-card"
-        size="small"
-        :bordered="true"
-        closable
-        @close="handleClose(notification.id)"
+        class="notification-wrapper"
       >
-        <div class="notification-content">
-          <n-icon size="24" color="#18a058">
-            <NotificationsIcon />
-          </n-icon>
-          <div class="notification-text">
-            <strong>📢 Уведомление</strong>
-            <p>{{ notification.message }}</p>
-            <small>{{ formatTime(notification.timestamp) }}</small>
+        <n-card
+          class="notification-card"
+          size="small"
+          :bordered="true"
+          closable
+          @close="handleClose(notification.id)"
+        >
+          <div class="notification-content">
+            <n-icon size="24" color="#18a058">
+              <NotificationsIcon />
+            </n-icon>
+            <div class="notification-text">
+              <strong>📢 Уведомление</strong>
+              <p>{{ notification.message }}</p>
+              <small>{{ formatTime(notification.timestamp) }}</small>
+            </div>
           </div>
-        </div>
-      </n-card>
+        </n-card>
+      </div>
     </transition-group>
   </div>
 </template>
@@ -34,28 +38,54 @@ import { useNotificationsStore } from '@/stores/notifications'
 const notificationsStore = useNotificationsStore()
 
 const visibleNotifications = computed(() => {
-  return notificationsStore.notifications.filter((n) => !n.read).slice(0, 5)
+  // Безопасная фильтрация с проверкой на существование массива
+  if (!notificationsStore.notifications || !Array.isArray(notificationsStore.notifications)) {
+    return []
+  }
+  return notificationsStore.notifications
+    .filter((n) => n && !n.read)
+    .slice(0, 5)
 })
 
 function handleClose(id: string) {
-  notificationsStore.markAsRead(id)
+  if (!id) return
+  try {
+    // Добавляем небольшую задержку для корректной работы анимации
+    requestAnimationFrame(() => {
+      notificationsStore.markAsRead(id)
+    })
+  } catch (error) {
+    console.error('Ошибка при закрытии уведомления:', error)
+  }
 }
 
 function formatTime(date: Date): string {
-  const now = new Date()
-  const diff = now.getTime() - new Date(date).getTime()
-  const seconds = Math.floor(diff / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
+  try {
+    const now = new Date()
+    const notificationDate = new Date(date)
+    
+    // Проверка на валидную дату
+    if (isNaN(notificationDate.getTime())) {
+      return 'недавно'
+    }
+    
+    const diff = now.getTime() - notificationDate.getTime()
+    const seconds = Math.floor(diff / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
 
-  if (seconds < 60) {
-    return 'только что'
-  } else if (minutes < 60) {
-    return `${minutes} мин назад`
-  } else if (hours < 24) {
-    return `${hours} ч назад`
-  } else {
-    return new Date(date).toLocaleString('ru-RU')
+    if (seconds < 60) {
+      return 'только что'
+    } else if (minutes < 60) {
+      return `${minutes} мин назад`
+    } else if (hours < 24) {
+      return `${hours} ч назад`
+    } else {
+      return notificationDate.toLocaleString('ru-RU')
+    }
+  } catch (error) {
+    console.error('Ошибка форматирования времени:', error)
+    return 'недавно'
   }
 }
 </script>
@@ -67,14 +97,24 @@ function formatTime(date: Date): string {
   right: 20px;
   z-index: 9999;
   max-width: 400px;
+  pointer-events: none;
+}
+
+.notifications-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
+}
+
+.notification-wrapper {
+  width: 100%;
+  pointer-events: auto;
 }
 
 .notification-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: slideIn 0.3s ease-out;
+  width: 100%;
 }
 
 .notification-content {
@@ -97,34 +137,30 @@ function formatTime(date: Date): string {
   font-size: 12px;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
+/* Анимации для transition-group */
 .notification-enter-active {
-  animation: slideIn 0.3s ease-out;
+  transition: all 0.4s ease-out;
 }
 
 .notification-leave-active {
-  animation: slideOut 0.3s ease-in;
+  transition: all 0.4s ease-in;
+  position: absolute;
+  right: 0;
+  width: 400px;
 }
 
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(400px);
-    opacity: 0;
-  }
+.notification-enter-from {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.notification-leave-to {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.notification-move {
+  transition: transform 0.4s ease;
 }
 </style>
 

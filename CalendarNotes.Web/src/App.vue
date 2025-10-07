@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import {
   NConfigProvider,
   NLayout,
@@ -48,8 +48,12 @@ import NotificationsPanel from './components/NotificationsPanel.vue'
 import { useNotificationsStore } from './stores/notifications'
 
 const isDarkTheme = ref(false)
+const isAppReady = ref(false)
 
 onMounted(async () => {
+  // Ждем следующего тика для завершения монтирования DOM
+  await nextTick()
+  
   try {
     // Инициализируем store и SignalR после монтирования компонента
     const notificationsStore = useNotificationsStore()
@@ -61,6 +65,8 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Ошибка инициализации SignalR:', error)
+  } finally {
+    isAppReady.value = true
   }
 })
 

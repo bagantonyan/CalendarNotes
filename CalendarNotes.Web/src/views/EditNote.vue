@@ -34,7 +34,7 @@ const notesStore = useNotesStore()
 const message = useMessage()
 
 const noteId = Number(route.params.id)
-const note = computed(() => notesStore.notes.find((n) => n.id === noteId))
+const note = computed(() => notesStore.notes.find((n) => n && n.id === noteId))
 const formValue = ref({ id: noteId, title: '', text: '', notificationTime: '' })
 const notificationTime = ref<number>(Date.now())
 

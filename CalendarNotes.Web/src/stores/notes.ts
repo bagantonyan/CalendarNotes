@@ -14,10 +14,28 @@ export const useNotesStore = defineStore('notes', () => {
     try {
       loading.value = true
       error.value = null
-      notes.value = await notesApi.getAll()
+      const fetchedNotes = await notesApi.getAll()
+      
+      // Отладка: смотрим что пришло с сервера
+      console.log('📥 Данные с API:', fetchedNotes)
+      console.log('📊 Тип данных:', typeof fetchedNotes)
+      console.log('📋 Является массивом:', Array.isArray(fetchedNotes))
+      
+      // Фильтруем только валидные заметки
+      if (Array.isArray(fetchedNotes)) {
+        const validNotes = fetchedNotes.filter((note) => note != null && note.id != null)
+        console.log('✅ Валидные заметки:', validNotes)
+        notes.value = validNotes
+      } else {
+        console.warn('⚠️ Данные не являются массивом:', fetchedNotes)
+        notes.value = []
+      }
+      
+      console.log('💾 Сохранено заметок:', notes.value.length)
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Ошибка загрузки заметок'
-      console.error('Error fetching notes:', err)
+      console.error('❌ Error fetching notes:', err)
+      notes.value = []
     } finally {
       loading.value = false
     }
@@ -28,7 +46,11 @@ export const useNotesStore = defineStore('notes', () => {
       loading.value = true
       error.value = null
       const newNote = await notesApi.create(data)
-      notes.value.push(newNote)
+      
+      // Добавляем только если заметка валидна
+      if (newNote && newNote.id != null) {
+        notes.value.push(newNote)
+      }
       return newNote
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Ошибка создания заметки'
@@ -63,11 +85,13 @@ export const useNotesStore = defineStore('notes', () => {
       error.value = null
       await notesApi.delete(id)
 
-      // Удаляем из локального массива
-      const index = notes.value.findIndex((n: Note) => n.id === id)
-      if (index !== -1) {
-        notes.value.splice(index, 1)
-      }
+      // Удаляем из локального массива используя requestAnimationFrame для плавности
+      requestAnimationFrame(() => {
+        const index = notes.value.findIndex((n: Note) => n && n.id === id)
+        if (index !== -1) {
+          notes.value.splice(index, 1)
+        }
+      })
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Ошибка удаления заметки'
       throw err

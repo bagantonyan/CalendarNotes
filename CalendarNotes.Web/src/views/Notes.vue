@@ -12,14 +12,14 @@
       </n-space>
 
       <n-spin :show="notesStore.loading">
-        <n-empty v-if="notesStore.notes.length === 0" description="У вас пока нет заметок">
+        <n-empty v-if="validNotes.length === 0" description="У вас пока нет заметок">
           <template #extra>
             <n-button @click="router.push('/notes/create')">Создать первую заметку</n-button>
           </template>
         </n-empty>
 
         <n-grid v-else :cols="3" :x-gap="20" :y-gap="20">
-          <n-grid-item v-for="note in notesStore.notes" :key="note.id">
+          <n-grid-item v-for="note in validNotes" :key="note.id">
             <n-card :title="note.title" hoverable>
               <p>{{ note.text }}</p>
               <template #footer>
@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   NSpace,
@@ -73,6 +73,14 @@ const router = useRouter()
 const notesStore = useNotesStore()
 const message = useMessage()
 
+// Фильтруем только валидные заметки (не null и не undefined)
+const validNotes = computed(() => {
+  if (!notesStore.notes || !Array.isArray(notesStore.notes)) {
+    return []
+  }
+  return notesStore.notes.filter((note) => note != null && note.id != null)
+})
+
 onMounted(() => {
   notesStore.fetchNotes()
 })
@@ -87,7 +95,13 @@ async function handleDelete(id: number) {
 }
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleString('ru-RU')
+  try {
+    if (!dateStr) return 'Не указано'
+    return new Date(dateStr).toLocaleString('ru-RU')
+  } catch (error) {
+    console.error('Ошибка форматирования даты:', error)
+    return 'Не указано'
+  }
 }
 </script>
 

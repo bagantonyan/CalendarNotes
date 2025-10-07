@@ -15,10 +15,13 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const connectionStatus = ref<'connected' | 'disconnected' | 'reconnecting'>('disconnected')
   const unreadCount = ref(0)
 
+  // Генератор уникальных ID
+  let notificationCounter = 0
+  
   // Actions
   function addNotification(message: string): void {
     const notification: Notification = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${notificationCounter++}`,
       message,
       timestamp: new Date(),
       read: false
@@ -75,15 +78,23 @@ export const useNotificationsStore = defineStore('notifications', () => {
     }
   }
 
+  // Флаг для предотвращения повторной инициализации
+  let isInitialized = false
+  
   async function initSignalR(): Promise<void> {
+    if (isInitialized) {
+      console.log('SignalR уже инициализирован')
+      return
+    }
+    
     try {
-      // Подключаемся к SignalR
-      await signalRService.start()
-      connectionStatus.value = 'connected'
-
-      // Подписываемся на уведомления
+      // Подписываемся на уведомления перед подключением
       signalRService.on('notification', (message: string) => {
-        addNotification(message)
+        try {
+          addNotification(message)
+        } catch (error) {
+          console.error('Ошибка добавления уведомления:', error)
+        }
       })
 
       signalRService.on('connected', () => {
@@ -97,6 +108,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
       signalRService.on('disconnected', () => {
         connectionStatus.value = 'disconnected'
       })
+      
+      // Подключаемся к SignalR
+      await signalRService.start()
+      connectionStatus.value = 'connected'
+      isInitialized = true
     } catch (err) {
       console.error('Failed to initialize SignalR:', err)
       connectionStatus.value = 'disconnected'
@@ -104,8 +120,13 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   async function stopSignalR(): Promise<void> {
-    await signalRService.stop()
-    connectionStatus.value = 'disconnected'
+    try {
+      await signalRService.stop()
+      connectionStatus.value = 'disconnected'
+      isInitialized = false
+    } catch (error) {
+      console.error('Ошибка остановки SignalR:', error)
+    }
   }
 
   return {
