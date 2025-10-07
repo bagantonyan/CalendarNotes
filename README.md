@@ -13,18 +13,12 @@
 - **CalendarNotes.DAL** - Слой доступа к данным (PostgreSQL)
 - **CalendarNotes.Shared** - Общие компоненты
 
-## Новые возможности ✨
-
 ### Аутентификация и авторизация
 - ✅ JWT токены для безопасной аутентификации
 - ✅ IdentityServer с ASP.NET Core Identity
 - ✅ Регистрация и вход пользователей
 - ✅ Защита всех API endpoints
 - ✅ Автоматическое добавление токенов к HTTP запросам
-
-### Исправленные проблемы
-- ✅ Ошибка DateTime с PostgreSQL исправлена
-- ✅ Поддержка timestamp without time zone
 
 ## Требования
 
