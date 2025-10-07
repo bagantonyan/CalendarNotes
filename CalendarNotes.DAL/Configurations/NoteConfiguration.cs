@@ -21,7 +21,8 @@ namespace CalendarNotes.DAL.Configurations
                 .IsRequired(true);
 
             builder.Property(p => p.NotificationTime)
-                .IsRequired(true);
+                .IsRequired(true)
+                .HasColumnType("timestamp without time zone"); // Используем timestamp без timezone
 
             builder.Property(p => p.IsNotified)
                 .HasDefaultValue(false)

@@ -48,6 +48,8 @@ namespace CalendarNotes.API
             builder.Services.AddProblemDetails();
 
             builder.Services.AddCorsConfigs();
+            
+            builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.Services.AddSignalR();
 
@@ -70,7 +72,8 @@ namespace CalendarNotes.API
             app.UseHttpsRedirection();
 
             app.UseCors("CorsPolicy");
-
+            
+            app.UseAuthentication();
             app.UseAuthorization();
 
             await app.MigrateDatabaseAsync();

@@ -11,13 +11,16 @@ namespace CalendarNotes.DAL.Configurations
             builder.HasQueryFilter(f => EF.Property<DateTime?>(f, "DeletedDate") == null);
 
             builder.Property(p => p.CreatedDate)
-                .IsRequired(true);
+                .IsRequired(true)
+                .HasColumnType("timestamp without time zone"); // Используем timestamp без timezone
 
             builder.Property(p => p.ModifiedDate)
-                .IsRequired(true);
+                .IsRequired(true)
+                .HasColumnType("timestamp without time zone"); // Используем timestamp без timezone
 
             builder.Property(p => p.DeletedDate)
-                .IsRequired(false);
+                .IsRequired(false)
+                .HasColumnType("timestamp without time zone"); // Используем timestamp без timezone
         }
     }
 }

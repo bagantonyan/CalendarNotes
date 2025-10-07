@@ -10,48 +10,80 @@ namespace CalendarNotes.API.Services
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<NotificationService> _logger;
 
         public NotificationService(
             IServiceScopeFactory serviceScopeFactory,
             IHubContext<NotificationHub> hubContext,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<NotificationService> logger)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _hubContext = hubContext;
             _configuration = configuration;
+            _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancelToken)
         {
+            _logger.LogInformation("NotificationService started");
+            
             while (!cancelToken.IsCancellationRequested)
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
+                try
                 {
-                    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-                    // convert UtcNow to Now
-                    var now = DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["NoteServiceOptions:UTCInterval"]));
-
-                    var notesToNotify = await unitOfWork.NoteRepository
-                        .GetByCondition(n => !n.IsNotified 
-                                           && n.NotificationTime <= now 
-                                           && n.NotificationTime > now.AddMinutes(-Convert.ToDouble(_configuration["NoteServiceOptions:CheckIntervalMinutes"])), 
-                                           trackChanges: true).ToListAsync(cancelToken);
-
-                    foreach (var note in notesToNotify)
+                    using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        var message = $"Notification: {note.Title} - {note.Text}";
+                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                        await _hubContext.Clients.All.SendAsync("ReceiveNotification", message, cancellationToken: cancelToken);
+                        // convert UtcNow to Now
+                        var utcInterval = Convert.ToDouble(_configuration["NoteServiceOptions:UTCInterval"]);
+                        var now = DateTime.UtcNow.AddHours(utcInterval);
+                        var checkInterval = Convert.ToDouble(_configuration["NoteServiceOptions:CheckIntervalMinutes"]);
 
-                        note.IsNotified = true;
+                        _logger.LogDebug($"Checking for notifications. Current time (UTC+{utcInterval}): {now}");
+
+                        var notesToNotify = await unitOfWork.NoteRepository
+                            .GetByCondition(n => !n.IsNotified 
+                                               && n.NotificationTime <= now 
+                                               && n.NotificationTime > now.AddMinutes(-checkInterval), 
+                                               trackChanges: true).ToListAsync(cancelToken);
+
+                        if (notesToNotify.Any())
+                        {
+                            _logger.LogInformation($"Found {notesToNotify.Count} notes to notify");
+                        }
+
+                        foreach (var note in notesToNotify)
+                        {
+                            var message = $"Notification: {note.Title} - {note.Text}";
+
+                            _logger.LogInformation($"Sending notification for note ID {note.Id}: {message}");
+                            
+                            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message, cancellationToken: cancelToken);
+
+                            note.IsNotified = true;
+                            
+                            _logger.LogInformation($"Successfully sent notification for note ID {note.Id}");
+                        }
+
+                        if (notesToNotify.Any())
+                        {
+                            await unitOfWork.SaveChangesAsync();
+                            _logger.LogInformation($"Marked {notesToNotify.Count} notes as notified");
+                        }
                     }
-
-                    await unitOfWork.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error in NotificationService");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(Convert.ToDouble(_configuration["NoteServiceOptions:DelayTime"])), cancelToken);
+                var delayTime = TimeSpan.FromSeconds(Convert.ToDouble(_configuration["NoteServiceOptions:DelayTime"]));
+                await Task.Delay(delayTime, cancelToken);
             }
+            
+            _logger.LogInformation("NotificationService stopped");
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using CalendarNotes.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CalendarNotes.DAL.Migrations
 {
     [DbContext(typeof(CalendarNotesDbContext))]
-    partial class CalendarNotesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251005122812_ChangeNotificationTimeToTimestamp")]
+    partial class ChangeNotificationTimeToTimestamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

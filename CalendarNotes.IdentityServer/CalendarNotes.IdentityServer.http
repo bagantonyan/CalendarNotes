@@ -1,0 +1,6 @@
+@CalendarNotes.IdentityServer_HostAddress = http://localhost:5259
+
+GET {{CalendarNotes.IdentityServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

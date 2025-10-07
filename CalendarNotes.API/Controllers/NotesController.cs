@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.OData.Query;
 using AutoMapper;
 using CalendarNotes.BLL.DTOs.Notes;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CalendarNotes.API.Controllers
 {
     [Route("odata/[controller]/[action]")]
     [ApiController]
+    [Authorize] // Требует аутентификации для всех методов
     public class NotesController : ControllerBase
     {
         private readonly INoteService _noteService;
