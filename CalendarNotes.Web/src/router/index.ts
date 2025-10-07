@@ -41,6 +41,18 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/chat',
+      name: 'chat',
+      component: () => import('@/views/Chat.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/friends',
+      name: 'friends',
+      component: () => import('@/views/Friends.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/NotFound.vue')

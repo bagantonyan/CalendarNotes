@@ -59,6 +59,9 @@ builder.Services.AddIdentityServer(options =>
 .AddProfileService<ProfileService>()
 .AddDeveloperSigningCredential(); // Для разработки, в продакшене использовать сертификат
 
+// Сервисы приложения
+builder.Services.AddScoped<IFriendshipService, FriendshipService>();
+
 // Настройка JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

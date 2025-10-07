@@ -14,6 +14,8 @@ namespace CalendarNotes.IdentityServer.Data
         {
         }
 
+        public DbSet<Friendship> Friendships { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -26,6 +28,16 @@ namespace CalendarNotes.IdentityServer.Data
             {
                 entity.Property(e => e.FirstName).HasMaxLength(100);
                 entity.Property(e => e.LastName).HasMaxLength(100);
+            });
+
+            builder.Entity<Friendship>(entity =>
+            {
+                entity.ToTable("Friendships");
+                entity.HasKey(f => f.Id);
+                entity.Property(f => f.RequesterId).HasMaxLength(256).IsRequired();
+                entity.Property(f => f.AddresseeId).HasMaxLength(256).IsRequired();
+                entity.Property(f => f.Status).HasMaxLength(32).IsRequired();
+                entity.HasIndex(f => new { f.RequesterId, f.AddresseeId }).IsUnique();
             });
         }
     }

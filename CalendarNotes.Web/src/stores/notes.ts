@@ -16,25 +16,15 @@ export const useNotesStore = defineStore('notes', () => {
       error.value = null
       const fetchedNotes = await notesApi.getAll()
       
-      // Отладка: смотрим что пришло с сервера
-      console.log('📥 Данные с API:', fetchedNotes)
-      console.log('📊 Тип данных:', typeof fetchedNotes)
-      console.log('📋 Является массивом:', Array.isArray(fetchedNotes))
-      
-      // Фильтруем только валидные заметки
+      // Фильтруем только валидные заметки (исключаем null и undefined)
       if (Array.isArray(fetchedNotes)) {
-        const validNotes = fetchedNotes.filter((note) => note != null && note.id != null)
-        console.log('✅ Валидные заметки:', validNotes)
-        notes.value = validNotes
+        notes.value = fetchedNotes.filter((note) => note != null && note.id != null)
       } else {
-        console.warn('⚠️ Данные не являются массивом:', fetchedNotes)
         notes.value = []
       }
-      
-      console.log('💾 Сохранено заметок:', notes.value.length)
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Ошибка загрузки заметок'
-      console.error('❌ Error fetching notes:', err)
+      console.error('Ошибка загрузки заметок:', err)
       notes.value = []
     } finally {
       loading.value = false

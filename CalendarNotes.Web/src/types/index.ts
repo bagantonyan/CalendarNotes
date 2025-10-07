@@ -55,3 +55,37 @@ export interface ApiResponse<T> {
   message?: string
 }
 
+// Типы для чата
+export interface ChatRoom {
+  id: number
+  name?: string
+  isGroupChat: boolean
+  creatorUserId: string
+  participantIds: string[]
+  createdDate: string
+  modifiedDate: string
+  lastMessage?: ChatMessage
+  unreadCount: number
+}
+
+export interface ChatMessage {
+  id: number
+  chatRoomId: number
+  senderId: string
+  senderName: string
+  content: string
+  isRead: boolean
+  createdDate: string
+}
+
+export interface CreateChatRoomRequest {
+  name?: string
+  isGroupChat: boolean
+  participantIds: string[]
+}
+
+export interface SendMessageRequest {
+  chatRoomId: number
+  content: string
+}
+

@@ -76,6 +76,7 @@ namespace CalendarNotes.API.Extensions
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<INoteService, NoteService>();
+            services.AddScoped<IChatService, ChatService>();
 
             services.AddAutoMapper(config =>
             {
@@ -138,7 +139,8 @@ namespace CalendarNotes.API.Extensions
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
                         
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
+                        if (!string.IsNullOrEmpty(accessToken) && 
+                            (path.StartsWithSegments("/notificationHub") || path.StartsWithSegments("/chatHub")))
                         {
                             context.Token = accessToken;
                         }

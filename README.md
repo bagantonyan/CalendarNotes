@@ -20,6 +20,11 @@
 - ✅ Защита всех API endpoints
 - ✅ Автоматическое добавление токенов к HTTP запросам
 
+### Реалтайм чат и друзья
+- ✅ Чат между пользователями через SignalR (приватные и групповые комнаты)
+- ✅ История сообщений, непрочитанные, индикатор «печатает»
+- ✅ Список друзей: заявки, принятие/отклонение, старт чата из списка друзей
+
 ## Требования
 
 - .NET 8.0 SDK
@@ -91,6 +96,13 @@ npm run dev
 - **API Swagger:** https://localhost:7135/swagger
 - **IdentityServer Swagger:** https://localhost:7200/swagger
 
+### 5. Чат и друзья — кратко
+
+1) Авторизуйтесь под двумя пользователями (в разных браузерах/окнах).
+2) Зайдите в «Друзья», отправьте заявку по email, второй пользователь примет.
+3) В списке друзей нажмите «Написать» — создастся/откроется приватный чат.
+4) Зайдите в «Чат»: сообщения приходят по SignalR в реальном времени, видно «печатает…», считаются непрочитанные.
+
 ## Использование
 
 ### Регистрация и вход
@@ -120,12 +132,11 @@ npm run dev
    - Время уведомления (локальное время)
 5. Заметка будет сохранена
 
-### Push-уведомления через SignalR
+### Реалтайм через SignalR
 
-- Уведомления отправляются автоматически в указанное время
-- SignalR Hub: `/notificationHub`
-- Клиент автоматически подключается к hub (см. `Views/Home/Index.cshtml`)
-- Поддерживает JWT аутентификацию для WebSocket соединений
+- Уведомления от сервиса заметок: hub `/notificationHub`
+- Чат между пользователями: hub `/chatHub`
+- Клиенты автоматически переподключаются; поддерживается JWT в WebSocket соединениях
 
 ## Технологический стек
 
@@ -137,7 +148,7 @@ npm run dev
 - AutoMapper
 - FluentValidation
 - Serilog
-- SignalR
+- SignalR (уведомления и чат)
 
 ### Frontend
 - **Vue 3** - Composition API
@@ -146,7 +157,7 @@ npm run dev
 - **Naive UI** - Component Library
 - **Vue Router** - Маршрутизация
 - **Axios** - HTTP клиент
-- **SignalR** - Real-time уведомления
+- **SignalR** - Real-time уведомления и чат
 - **Vite** - Build tool
 
 ### Аутентификация
@@ -202,6 +213,26 @@ CalendarNotes/
 - `PUT /odata/Notes/Update` - Обновить заметку
 - `DELETE /odata/Notes/Delete?noteId={id}` - Удалить заметку
 - `GET /odata/Notes/ExportNotesToCsv` - Экспорт в CSV
+
+### Чат (CalendarNotes.API)
+- `GET /api/Chat/GetUserRooms?userId={id}` — комнаты пользователя
+- `GET /api/Chat/GetRoomById?roomId={id}` — комната по ID
+- `GET /api/Chat/GetRoomMessages?roomId={id}&skip=0&take=50` — сообщения комнаты
+- `POST /api/Chat/CreateRoom?creatorUserId={id}` — создать комнату
+- `POST /api/Chat/SendMessage?senderId={id}&senderName={name}` — отправить сообщение
+- `POST /api/Chat/MarkMessagesAsRead?roomId={id}` — отметить как прочитанные
+- `POST /api/Chat/GetOrCreatePrivateRoom?userId1={id1}&userId2={id2}` — приватная
+
+SignalR:
+- `/chatHub` — методы клиента: `RegisterUser`, `JoinRoom`, `LeaveRoom`, `SendMessage`, `UserTyping`, `UserStoppedTyping`, `MarkAsRead`
+- события сервера: `ReceiveMessage`, `UserTyping`, `UserStoppedTyping`, `MessagesRead`, `UserRegistered`, `JoinedRoom`, `Error`
+
+### Друзья (CalendarNotes.IdentityServer)
+- `POST /api/Friends/SendRequest?requesterId={id}&addresseeEmail={email}` — отправить заявку
+- `POST /api/Friends/Accept?friendshipId={id}` — принять
+- `POST /api/Friends/Reject?friendshipId={id}` — отклонить
+- `GET /api/Friends/GetFriends?userId={id}` — мои друзья
+- `GET /api/Friends/GetPending?userId={id}` — входящие заявки
 
 ### Аутентификация
 - `POST /api/account/register` - Регистрация

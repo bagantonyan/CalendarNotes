@@ -92,7 +92,9 @@ import {
   HomeOutline as HomeIcon,
   CheckmarkCircle as ConnectedIcon,
   CloseCircle as DisconnectedIcon,
-  Sync as ReconnectingIcon
+  Sync as ReconnectingIcon,
+  ChatboxOutline as ChatIcon,
+  PeopleOutline as FriendsIcon
 } from '@vicons/ionicons5'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -120,6 +122,16 @@ const menuOptions = computed<MenuOption[]>(() => [
     label: 'Заметки',
     key: 'notes',
     icon: renderIcon(NotesIcon)
+  },
+  {
+    label: 'Друзья',
+    key: 'friends',
+    icon: renderIcon(FriendsIcon)
+  },
+  {
+    label: 'Чат',
+    key: 'chat',
+    icon: renderIcon(ChatIcon)
   }
 ])
 

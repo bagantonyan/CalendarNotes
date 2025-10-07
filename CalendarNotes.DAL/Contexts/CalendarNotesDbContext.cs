@@ -8,10 +8,14 @@ namespace CalendarNotes.DAL.Contexts
     public class CalendarNotesDbContext(DbContextOptions<CalendarNotesDbContext> options) : DbContext(options)
     {
         public DbSet<Note> Notes { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new NoteConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatRoomConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatMessageConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
